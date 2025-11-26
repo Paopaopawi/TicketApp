@@ -18,10 +18,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
         // Find CardViews
         cardEvent = findViewById(R.id.cardEventManagement);
         cardReservation = findViewById(R.id.cardReservationManagement);
-        cardUser = findViewById(R.id.cardUserManagement);
         cardReports = findViewById(R.id.cardReports);
-        cardNotifications = findViewById(R.id.cardNotifications);
-        cardProfile = findViewById(R.id.cardProfile);
 
         // Set click listeners
         cardEvent.setOnClickListener(v -> openActivity(EventListActivity.class));
