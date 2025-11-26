@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardEvent"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="10dp"
+    card_view:cardElevation="4dp"
+    card_view:cardCornerRadius="14dp">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- EVENT NAME -->
+        <TextView
+            android:id="@+id/tvEventName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sample Event Name"
+            android:textSize="18sp"
+            android:textStyle="bold"/>
+
+        <!-- DATE -->
+        <TextView
+            android:id="@+id/tvEventDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Date: January 1, 2025"
+            android:layout_marginTop="4dp"/>
+
+        <!-- VENUE -->
+        <TextView
+            android:id="@+id/tvEventVenue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Venue: SM Arena"
+            android:layout_marginTop="2dp"/>
+
+        <!-- TICKETS -->
+        <TextView
+            android:id="@+id/tvTickets"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tickets: 100 Available"
+            android:layout_marginTop="6dp"
+            android:textStyle="italic"/>
+
+
+
+        <!-- EDIT + DELETE BUTTONS -->
+        <LinearLayout
+            android:orientation="horizontal"
+            android:gravity="end"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="12dp">
+
+            <TextView
+                android:id="@+id/tvEdit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Edit"
+                android:textStyle="bold"
+                android:textColor="#1E88E5"
+                android:padding="8dp"/>
+
+            <TextView
+                android:id="@+id/tvDelete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Delete"
+                android:textStyle="bold"
+                android:textColor="#E53935"
+                android:padding="8dp"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

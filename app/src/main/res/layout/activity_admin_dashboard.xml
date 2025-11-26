@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <GridLayout
+        android:id="@+id/gridDashboard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:columnCount="2"
+        android:rowCount="3"
+        android:orientation="horizontal"
+        android:alignmentMode="alignMargins"
+        android:columnOrderPreserved="false"
+        android:useDefaultMargins="true">
+
+        <!-- Event Management -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardEventManagement"
+            android:layout_width="0dp"
+            android:layout_height="150dp"
+            android:layout_columnWeight="1"
+            android:layout_rowWeight="1"
+            android:layout_margin="8dp"
+            app:cardCornerRadius="16dp"
+            android:backgroundTint="#FFB74D">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="Event Management"
+                android:textSize="18sp"
+                android:textColor="@android:color/white"
+                android:gravity="center"
+                android:textStyle="bold"/>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Reservation Management -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardReservationManagement"
+            android:layout_width="0dp"
+            android:layout_height="150dp"
+            android:layout_columnWeight="1"
+            android:layout_rowWeight="1"
+            android:layout_margin="8dp"
+            app:cardCornerRadius="16dp"
+            android:backgroundTint="#4DB6AC">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="Reservation Management"
+                android:textSize="18sp"
+                android:textColor="@android:color/white"
+                android:gravity="center"
+                android:textStyle="bold"/>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Reports -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardReports"
+            android:layout_width="0dp"
+            android:layout_height="150dp"
+            android:layout_columnWeight="1"
+            android:layout_rowWeight="1"
+            android:layout_margin="8dp"
+            app:cardCornerRadius="16dp"
+            android:backgroundTint="#4FC3F7">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="Reports"
+                android:textSize="18sp"
+                android:textColor="@android:color/white"
+                android:gravity="center"
+                android:textStyle="bold"/>
+        </androidx.cardview.widget.CardView>
+
+
+
+
+
+    </GridLayout>
+</ScrollView>

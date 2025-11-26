@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    card_view:cardCornerRadius="12dp"
+    card_view:cardElevation="4dp"
+    android:layout_marginTop="8dp">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:padding="12dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- Ticket Name -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilTicketName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Ticket Name">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etTicketName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Ticket Type -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilTicketType"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Ticket Type"
+            android:layout_marginTop="8dp">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etTicketType"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Ticket Price -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilTicketPrice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Ticket Price"
+            android:layout_marginTop="8dp">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etTicketPrice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Ticket Quantity -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilTicketQuantity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Available Tickets"
+            android:layout_marginTop="8dp">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etTicketQuantity"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+    </LinearLayout>
+</androidx.cardview.widget.CardView>
