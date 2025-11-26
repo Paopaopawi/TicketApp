@@ -8,7 +8,7 @@ import com.example.ticketapp.R;
 
 public class AdminDashboardActivity extends AppCompatActivity {
 
-    private CardView cardEvent, cardReservation, cardUser, cardReports, cardNotifications, cardProfile;
+    private CardView cardEvent, cardReservation, cardReports;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,10 +23,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
         // Set click listeners
         cardEvent.setOnClickListener(v -> openActivity(EventListActivity.class));
         cardReservation.setOnClickListener(v -> openActivity(ReservationListActivity.class));
-        cardUser.setOnClickListener(v -> openActivity(UserListActivity.class));
         cardReports.setOnClickListener(v -> openActivity(ReportsActivity.class));
-        cardNotifications.setOnClickListener(v -> openActivity(NotificationsActivity.class));
-        cardProfile.setOnClickListener(v -> openActivity(AdminProfileActivity.class));
     }
 
     private void openActivity(Class<?> activityClass){
