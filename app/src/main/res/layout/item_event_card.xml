@@ -32,12 +32,12 @@
             android:text="Date: January 1, 2025"
             android:layout_marginTop="4dp"/>
 
-        <!-- VENUE -->
+        <!-- EVENT DETAILS (REPLACED VENUE) -->
         <TextView
-            android:id="@+id/tvEventVenue"
+            android:id="@+id/tvEventDetails"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Venue: SM Arena"
+            android:text="Details: Lorem ipsum dolor sit amet..."
             android:layout_marginTop="2dp"/>
 
         <!-- TICKETS -->
@@ -48,8 +48,17 @@
             android:text="Tickets: 100 Available"
             android:layout_marginTop="6dp"
             android:textStyle="italic"/>
+        <TextView
+            android:id="@+id/tvSaleStart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sale Start: -" />
 
-
+        <TextView
+            android:id="@+id/tvSaleEnd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sale End: -" />
 
         <!-- EDIT + DELETE BUTTONS -->
         <LinearLayout

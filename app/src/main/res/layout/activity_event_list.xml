@@ -2,17 +2,38 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingBottom="16dp"
+    android:paddingTop="60dp">
+
+
+    <!-- Search Bar -->
 
     <Button
         android:id="@+id/btnAddEvent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Add Event"/>
+        android:text="Add Event" />
+
+    <EditText
+        android:id="@+id/etSearch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Search events..."
+        android:layout_marginTop="10dp"/>
+
+    <!-- Filter Dropdown -->
+    <Spinner
+        android:id="@+id/spFilter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewEvents"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="8dp"/>
+        android:layout_marginTop="8dp" />
+
 </LinearLayout>

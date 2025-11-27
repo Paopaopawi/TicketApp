@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/bookingRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context="com.example.ticketapp.activities.TicketBookingActivity"
+    >
+
+    <!-- Header with Timer -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:weightSum="1"
+        android:paddingBottom="8dp">
+
+        <TextView
+            android:id="@+id/tvBookingTitle"
+            android:layout_width="0dp"
+            android:layout_weight="0.5"
+            android:layout_height="wrap_content"
+            android:text="Select Tickets"
+            android:textSize="20sp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/tvTimer"
+            android:layout_width="0dp"
+            android:layout_weight="0.5"
+            android:gravity="end"
+            android:layout_height="wrap_content"
+            android:text="05:00"
+            android:textSize="18sp"
+            android:textColor="@color/black"/>
+    </LinearLayout>
+
+
+    <!-- Warning Box -->
+    <TextView
+        android:id="@+id/tvWarning"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="WARNING: Your ticket selection is temporarily reserved. Complete purchase before the timer runs out!"
+        android:background="#FFF3CD"
+        android:textColor="#856404"
+        android:padding="8dp"
+        android:textSize="14sp"
+        android:layout_marginBottom="8dp"/>
+
+    <!-- Total Tickets Selected -->
+    <TextView
+        android:id="@+id/tvTotalSelected"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Total Tickets Selected: 0 (Max 4 per user)"
+        android:paddingBottom="8dp"
+        android:textSize="16sp"/>
+
+    <!-- RecyclerView for Ticket Types -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvTickets"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+    <!-- Order Summary -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="8dp"
+        android:background="#EEEEEE"
+        android:layout_marginTop="8dp">
+
+        <TextView
+            android:id="@+id/tvSubtotal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Subtotal: ₱0.00"/>
+
+        <TextView
+            android:id="@+id/tvServiceFee"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Service Fees (2.5%): ₱0.00"/>
+
+        <TextView
+            android:id="@+id/tvTotalDue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="TOTAL DUE: ₱0.00"
+            android:textStyle="bold"
+            android:textColor="@color/black"/>
+    </LinearLayout>
+
+    <!-- Proceed Button -->
+    <Button
+        android:id="@+id/btnConfirmBooking"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="PROCEED TO CHECKOUT"
+        android:layout_marginTop="8dp"
+        android:backgroundTint="@color/black"
+        android:textColor="@android:color/white"/>
+</LinearLayout>

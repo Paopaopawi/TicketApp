@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/paymentRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Header -->
+    <TextView
+        android:id="@+id/tvPaymentTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Payment"
+        android:textSize="20sp"
+        android:textStyle="bold"/>
+
+    <!-- Payment Instructions / Warning -->
+    <TextView
+        android:id="@+id/tvPaymentWarning"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Please review your order and complete the payment."
+        android:textSize="14sp"
+        android:padding="8dp"
+        android:background="#FFF3CD"
+        android:textColor="#856404"
+        android:layout_marginTop="8dp"/>
+    <TextView
+        android:id="@+id/tvPaymentTimer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="05:00"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/holo_red_dark"
+        android:layout_marginTop="8dp"/>
+
+    <!-- Order Summary Box -->
+    <LinearLayout
+        android:id="@+id/orderSummaryBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="8dp"
+        android:background="#EEEEEE"
+        android:layout_marginTop="8dp">
+
+        <TextView
+            android:id="@+id/tvPaymentSubtotal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Subtotal: ₱0.00"/>
+
+        <TextView
+            android:id="@+id/tvPaymentServiceFee"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Service Fees (2.5%): ₱0.00"/>
+
+        <TextView
+            android:id="@+id/tvPaymentTotalDue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="TOTAL DUE: ₱0.00"
+            android:textStyle="bold"
+            android:textColor="@android:color/black"/>
+    </LinearLayout>
+
+    <!-- Payment Method Selection -->
+    <TextView
+        android:id="@+id/tvSelectPaymentMethod"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Select Payment Method"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:layout_marginTop="16dp"/>
+
+    <Spinner
+        android:id="@+id/spinnerPaymentMethod"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"/>
+
+    <!-- Proceed Button -->
+    <Button
+        android:id="@+id/btnProceedPayment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="PROCEED TO PAY"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="@android:color/holo_blue_dark"
+        android:textColor="@android:color/white"/>
+</LinearLayout>

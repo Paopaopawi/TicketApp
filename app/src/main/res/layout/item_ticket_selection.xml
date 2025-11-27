@@ -1,0 +1,33 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="8dp"
+    android:layout_marginBottom="8dp">
+
+    <TextView
+        android:id="@+id/tvTicketName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="VIP Section"
+        android:textStyle="bold"
+        android:textSize="16sp"/>
+
+    <TextView
+        android:id="@+id/tvTicketPrice"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="₱6,500.00 / ticket"/>
+
+    <TextView
+        android:id="@+id/tvTicketAvailable"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Status: 100 Available"/>
+
+    <Spinner
+        android:id="@+id/spinnerQuantity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+</LinearLayout>

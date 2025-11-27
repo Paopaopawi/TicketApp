@@ -6,7 +6,10 @@
 
     <LinearLayout
         android:orientation="vertical"
-        android:padding="16dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingBottom="16dp"
+        android:paddingTop="70dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -37,17 +40,50 @@
                 android:clickable="true"/>
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Event Venue -->
+        <!-- Sale Start -->
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tilEventVenue"
+            android:id="@+id/tilSaleStart"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Event Venue"
+            android:hint="Sale Start Date &amp; Time"
             android:layout_marginTop="12dp">
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etEventVenue"
+                android:id="@+id/etSaleStart"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:focusable="false"
+                android:clickable="true"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Sale End -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilSaleEnd"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Sale End Date &amp; Time"
+            android:layout_marginTop="12dp">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etSaleEnd"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusable="false"
+                android:clickable="true"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Event Details -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilEventDetails"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Event Details"
+            android:layout_marginTop="12dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etEventDetails"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="top"
+                android:minLines="3"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Tickets Container -->
