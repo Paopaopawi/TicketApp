@@ -2,6 +2,7 @@ package com.example.ticketapp.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -40,7 +41,7 @@ public class TicketBookingActivity extends AppCompatActivity {
     private String eventId;
     private List<TicketFormData> ticketsList = new ArrayList<>();
     private Map<String, Integer> selectedQuantities = new HashMap<>();
-    private Map<String, String> ticketNameToKey = new HashMap<>(); // name -> firebase child key
+    private Map<String, String> ticketNameToKey = new HashMap<>();
     private TicketSelectionAdapter adapter;
 
     private static final double SERVICE_FEE_PERCENT = 0.025;
@@ -68,8 +69,26 @@ public class TicketBookingActivity extends AppCompatActivity {
         loadTickets();
 
         btnConfirmBooking.setOnClickListener(v -> {
-            // Run cleanupExpiredHolds first
-            cleanupExpiredHolds(() -> holdAndProceed());
+            cleanupExpiredHolds(() -> {
+                String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                checkUserActiveHold(uid, (hasActive, nearestExpiry) -> {
+                    if (hasActive) {
+                        long now = System.currentTimeMillis();
+                        long remaining = nearestExpiry - now;
+                        long sec = remaining / 1000;
+                        long min = sec / 60;
+                        sec %= 60;
+
+                        Toast.makeText(
+                                TicketBookingActivity.this,
+                                "You can only book once every 5 minutes.\nWait " + min + "m " + sec + "s before booking again.",
+                                Toast.LENGTH_LONG
+                        ).show();
+                    } else {
+                        holdAndProceed(); // cleaned holdAndProceed
+                    }
+                });
+            });
         });
     }
 
@@ -117,10 +136,11 @@ public class TicketBookingActivity extends AppCompatActivity {
         tvTotalDue.setText("TOTAL DUE: ₱" + nf.format(total));
     }
 
+    // ---------- CLEANED holdAndProceed ----------
     private void holdAndProceed() {
-        // gather choices
         Map<String, Integer> toHold = new HashMap<>();
         int subtotal = 0;
+
         for (TicketFormData t : ticketsList) {
             int qty = selectedQuantities.getOrDefault(t.getName(), 0);
             if (qty > 0) {
@@ -140,188 +160,194 @@ public class TicketBookingActivity extends AppCompatActivity {
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         DatabaseReference ticketsRef = FirebaseHelper.getEventsRef().child(eventId).child("tickets");
 
-        int finalSubtotal = subtotal;
-        ticketsRef.get().addOnSuccessListener(snapshot -> {
-            long now = System.currentTimeMillis();
-            boolean hasActiveHold = false;
-            int totalUserTickets = 0;
+        final List<TicketFormData> heldTicketsForIntent = new ArrayList<>();
 
-            for (DataSnapshot ticketSnap : snapshot.getChildren()) {
-                DataSnapshot holdsSnap = ticketSnap.child("holds");
-                for (DataSnapshot holdSnap : holdsSnap.getChildren()) {
-                    String holdUserId = holdSnap.child("userId").getValue(String.class);
-                    Long expiresAt = holdSnap.child("expiresAt").getValue(Long.class);
+        for (Map.Entry<String, Integer> entry : toHold.entrySet()) {
+            String ticketName = entry.getKey();
+            int qty = entry.getValue();
+            String key = ticketNameToKey.get(ticketName);
+            if (key == null) continue;
 
-                    // 5-minute active hold check
-                    if (uid.equals(holdUserId) && expiresAt != null && expiresAt > now) {
-                        hasActiveHold = true;
-                    }
+            ticketsRef.child(key).runTransaction(new Transaction.Handler() {
+                @NonNull
+                @Override
+                public Transaction.Result doTransaction(@NonNull MutableData currentData) {
+                    TicketFormData t = currentData.getValue(TicketFormData.class);
+                    if (t == null) return Transaction.abort();
 
-                    // count total tickets for this user
-                    if (uid.equals(holdUserId)) {
-                        Integer qty = holdSnap.child("quantity").getValue(Integer.class);
-                        if (qty != null) totalUserTickets += qty;
-                    }
-                }
-            }
+                    int freeQty = t.getAvailableQuantity();
+                    if (freeQty < qty) return Transaction.abort();
 
-            // Check maximum 4 tickets
-            int requestedQty = toHold.values().stream().mapToInt(Integer::intValue).sum();
-            if (totalUserTickets + requestedQty > 4) {
-                Toast.makeText(TicketBookingActivity.this,
-                        "Cannot book more than 4 tickets in total for this event",
-                        Toast.LENGTH_LONG).show();
-                return;
-            }
+                    MutableData holdsNode = currentData.child("holds");
+                    boolean userHoldExists = false;
+                    String userHoldId = null;
 
-            if (hasActiveHold) {
-                Toast.makeText(TicketBookingActivity.this,
-                        "You can only book once every 5 minutes. Please wait for your current hold to expire.",
-                        Toast.LENGTH_LONG).show();
-            } else {
-                createHolds(toHold, finalSubtotal);
-            }
-
-        }).addOnFailureListener(e -> Toast.makeText(TicketBookingActivity.this,
-                "Failed to check active holds: " + e.getMessage(), Toast.LENGTH_SHORT).show());
-    }
-
-    private void createHolds(Map<String, Integer> toHold, int subtotal) {
-        final int serviceFee = (int) Math.round(subtotal * SERVICE_FEE_PERCENT);
-        final int totalDue = subtotal + serviceFee;
-
-        DatabaseReference offsetRef = FirebaseHelper.getEventsRef().getRoot().child(".info/serverTimeOffset");
-        int finalSubtotal = subtotal;
-        offsetRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override public void onDataChange(@NonNull DataSnapshot snapshot) {
-                long offset = snapshot.getValue(Long.class) != null ? snapshot.getValue(Long.class) : 0L;
-                long estimatedServerTime = System.currentTimeMillis() + offset;
-                long expiresAt = estimatedServerTime + (5 * 60 * 1000L); // 5 minutes
-
-                String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                DatabaseReference ticketsRef = FirebaseHelper.getEventsRef().child(eventId).child("tickets");
-
-                final List<TicketFormData> heldTicketsForIntent = new ArrayList<>();
-                final int[] processed = {0};
-                final int totalToProcess = toHold.size();
-
-                for (Map.Entry<String, Integer> entry : toHold.entrySet()) {
-                    String ticketName = entry.getKey();
-                    int qty = entry.getValue();
-                    String key = ticketNameToKey.get(ticketName);
-                    if (key == null) {
-                        processed[0]++;
-                        continue;
-                    }
-
-                    ticketsRef.child(key).runTransaction(new Transaction.Handler() {
-                        @NonNull
-                        @Override
-                        public Transaction.Result doTransaction(@NonNull MutableData currentData) {
-                            TicketFormData t = currentData.getValue(TicketFormData.class);
-                            if (t == null) return Transaction.abort();
-
-                            int freeQty = t.getAvailableQuantity() - t.getOnHoldQuantity();
-                            if (freeQty >= qty) {
-                                t.setOnHoldQuantity(t.getOnHoldQuantity() + qty);
-                                currentData.setValue(t);
-                                return Transaction.success(currentData);
-                            }
-                            return Transaction.abort();
-                        }
-
-                        @Override
-                        public void onComplete(@NonNull DatabaseError error, boolean committed, DataSnapshot currentData) {
-                            processed[0]++;
-                            if (committed && currentData.exists()) {
-                                String holdId = UUID.randomUUID().toString();
-                                Map<String, Object> holdData = new HashMap<>();
-                                holdData.put("userId", uid);
-                                holdData.put("quantity", qty);
-                                holdData.put("expiresAt", expiresAt);
-                                holdData.put("subtotal", finalSubtotal);
-                                holdData.put("serviceFee", serviceFee);
-                                holdData.put("totalDue", totalDue);
-
-                                ticketsRef.child(key).child("holds").child(holdId).setValue(holdData);
-
-                                TicketFormData t = currentData.getValue(TicketFormData.class);
-                                if (t != null) {
-                                    TicketFormData copy = new TicketFormData(t.getName(), t.getType(), t.getPrice(), t.getAvailableQuantity());
-                                    copy.setOnHoldQuantity(qty);
-                                    heldTicketsForIntent.add(copy);
-                                }
-                            } else {
-                                Toast.makeText(TicketBookingActivity.this, "Failed to hold " + ticketName + " (not enough available)", Toast.LENGTH_SHORT).show();
-                            }
-
-                            if (processed[0] == totalToProcess) {
-                                if (!heldTicketsForIntent.isEmpty()) {
-                                    Intent it = new Intent(TicketBookingActivity.this, CheckOutActivity.class);
-                                    it.putParcelableArrayListExtra("selectedTickets", new ArrayList<>(heldTicketsForIntent));
-                                    it.putExtra("eventId", eventId);
-                                    it.putExtra("expiresAt", expiresAt);
-                                    startActivity(it);
-                                }
+                    if (holdsNode.getValue() != null) {
+                        for (MutableData holdSnap : holdsNode.getChildren()) {
+                            String holdUserId = holdSnap.child("userId").getValue(String.class);
+                            if (uid.equals(holdUserId)) {
+                                userHoldExists = true;
+                                userHoldId = holdSnap.getKey();
+                                break;
                             }
                         }
-                    });
-                }
-            }
+                    }
 
-            @Override public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(TicketBookingActivity.this, "Failed to get server time offset: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+                    long expiresAt = System.currentTimeMillis() + (5 * 60 * 1000L);
+
+                    if (userHoldExists && userHoldId != null) {
+                        int existingQty = holdsNode.child(userHoldId).child("quantity").getValue(Integer.class) != null
+                                ? holdsNode.child(userHoldId).child("quantity").getValue(Integer.class)
+                                : 0;
+                        holdsNode.child(userHoldId).child("quantity").setValue(existingQty + qty);
+                        holdsNode.child(userHoldId).child("expiresAt").setValue(expiresAt);
+                    } else {
+                        String newHoldId = UUID.randomUUID().toString();
+                        Map<String, Object> holdData = new HashMap<>();
+                        holdData.put("userId", uid);
+                        holdData.put("quantity", qty);
+                        holdData.put("expiresAt", expiresAt);
+                        holdsNode.child(newHoldId).setValue(holdData);
+                        userHoldId = newHoldId;
+                    }
+
+                    // Update ticket quantities only
+                    t.setAvailableQuantity(freeQty - qty);
+                    t.setOnHoldQuantity(t.getOnHoldQuantity() + qty);
+                    currentData.child("availableQuantity").setValue(t.getAvailableQuantity());
+                    currentData.child("onHoldQuantity").setValue(t.getOnHoldQuantity());
+
+                    return Transaction.success(currentData);
+                }
+
+                @Override
+                public void onComplete(@NonNull DatabaseError error, boolean committed, DataSnapshot currentData) {
+                    if (!committed) {
+                        Toast.makeText(TicketBookingActivity.this, "Failed to hold tickets", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    // Create checkout copy reading expiresAt from the hold node
+                    TicketFormData t = currentData.getValue(TicketFormData.class);
+                    if (t == null) return;
+
+                    DataSnapshot holdsSnap = currentData.child("holds");
+                    long expiresAt = 0;
+                    String holdId = null;
+                    for (DataSnapshot holdSnap : holdsSnap.getChildren()) {
+                        String holdUser = holdSnap.child("userId").getValue(String.class);
+                        if (uid.equals(holdUser)) {
+                            holdId = holdSnap.getKey();
+                            Long exp = holdSnap.child("expiresAt").getValue(Long.class);
+                            if (exp != null) expiresAt = exp;
+                            break;
+                        }
+                    }
+
+                    TicketFormData copy = new TicketFormData(
+                            t.getName(),
+                            t.getType(),
+                            t.getPrice(),
+                            t.getAvailableQuantity(),
+                            expiresAt // only from hold
+                    );
+                    copy.setOnHoldQuantity(toHold.get(t.getName()));
+                    copy.setHoldId(holdId);
+                    copy.setEventId(eventId);
+                    copy.setTicketKey(key);
+                    heldTicketsForIntent.add(copy);
+
+                    if (heldTicketsForIntent.size() == toHold.size()) {
+                        Intent it = new Intent(TicketBookingActivity.this, CheckOutActivity.class);
+                        it.putParcelableArrayListExtra("selectedTickets", new ArrayList<>(heldTicketsForIntent));
+                        it.putExtra("eventId", eventId);
+                        startActivity(it);
+                    }
+                }
+            });
+        }
     }
 
-    // ------------------- NEW: Cleanup expired holds -------------------
+
+    // ---------- CLEANED cleanupExpiredHolds ----------
     private void cleanupExpiredHolds(Runnable onComplete) {
         DatabaseReference ticketsRef = FirebaseHelper.getEventsRef().child(eventId).child("tickets");
         long now = System.currentTimeMillis();
 
         ticketsRef.get().addOnSuccessListener(snapshot -> {
             for (DataSnapshot ticketSnap : snapshot.getChildren()) {
-                String key = ticketSnap.getKey();
-                if (ticketSnap.child("holds").exists()) {
-                    for (DataSnapshot holdSnap : ticketSnap.child("holds").getChildren()) {
-                        Long expiresAt = holdSnap.child("expiresAt").getValue(Long.class);
-                        Integer qty = holdSnap.child("quantity").getValue(Integer.class);
-                        if (expiresAt != null && expiresAt <= now && qty != null) {
-                            // Run transaction on the ticket node to decrement onHold and increment available
-                            ticketsRef.child(key).runTransaction(new Transaction.Handler() {
-                                @NonNull
-                                @Override
-                                public Transaction.Result doTransaction(@NonNull MutableData currentData) {
-                                    TicketFormData tLocal = currentData.getValue(TicketFormData.class);
-                                    if (tLocal == null) return Transaction.abort();
+                String ticketKey = ticketSnap.getKey();
+                if (ticketKey == null) continue;
 
-                                    tLocal.setOnHoldQuantity(Math.max(0, tLocal.getOnHoldQuantity() - qty));
-                                    tLocal.setAvailableQuantity(tLocal.getAvailableQuantity() + qty);
-                                    currentData.setValue(tLocal);
-                                    return Transaction.success(currentData);
-                                }
+                ticketsRef.child(ticketKey).runTransaction(new Transaction.Handler() {
+                    @NonNull
+                    @Override
+                    public Transaction.Result doTransaction(@NonNull MutableData currentData) {
+                        TicketFormData ticketData = currentData.getValue(TicketFormData.class);
+                        if (ticketData == null) return Transaction.success(currentData);
 
-                                @Override
-                                public void onComplete(@NonNull DatabaseError error, boolean committed, DataSnapshot currentData) {
-                                    // After transaction completes, remove the hold
-                                    holdSnap.getRef().removeValue();
+                        MutableData holdsNode = currentData.child("holds");
+                        if (holdsNode.getValue() != null) {
+                            int activeOnHold = 0;
+                            List<String> expiredHoldKeys = new ArrayList<>();
+
+                            for (MutableData holdSnap : holdsNode.getChildren()) {
+                                Long expiresAt = holdSnap.child("expiresAt").getValue(Long.class);
+                                Integer qty = holdSnap.child("quantity").getValue(Integer.class);
+                                if (qty == null) qty = 0;
+
+                                if (expiresAt != null && expiresAt <= now) {
+                                    expiredHoldKeys.add(holdSnap.getKey());
+                                } else {
+                                    activeOnHold += qty;
                                 }
-                            });
-                        } else if (expiresAt != null && expiresAt <= now) {
-                            // Even if qty is null, remove the hold
-                            holdSnap.getRef().removeValue();
+                            }
+
+                            for (String holdKey : expiredHoldKeys) holdsNode.child(holdKey).setValue(null);
+
+                            int totalTickets = ticketData.getAvailableQuantity() + ticketData.getOnHoldQuantity();
+                            currentData.child("onHoldQuantity").setValue(activeOnHold);
+                            currentData.child("availableQuantity").setValue(Math.max(totalTickets - activeOnHold, 0));
                         }
+
+                        return Transaction.success(currentData);
+                    }
+
+                    @Override
+                    public void onComplete(@NonNull DatabaseError error, boolean committed, DataSnapshot currentData) { }
+                });
+            }
+            if (onComplete != null) onComplete.run();
+        }).addOnFailureListener(e -> { if (onComplete != null) onComplete.run(); });
+    }
+
+    // ---------- CLEANED checkUserActiveHold ----------
+    private void checkUserActiveHold(String uid, ActiveHoldCallback callback) {
+        DatabaseReference ticketsRef = FirebaseHelper.getEventsRef().child(eventId).child("tickets");
+
+        ticketsRef.get().addOnSuccessListener(snapshot -> {
+            long now = System.currentTimeMillis();
+            boolean hasActiveHold = false;
+            long nearestExpiry = Long.MAX_VALUE;
+
+            for (DataSnapshot ticketSnap : snapshot.getChildren()) {
+                DataSnapshot holdsSnap = ticketSnap.child("holds");
+                for (DataSnapshot holdSnap : holdsSnap.getChildren()) {
+                    String holdUser = holdSnap.child("userId").getValue(String.class);
+                    Long expiresAt = holdSnap.child("expiresAt").getValue(Long.class);
+                    if (holdUser != null && holdUser.equals(uid) && expiresAt != null && expiresAt > now) {
+                        hasActiveHold = true;
+                        nearestExpiry = Math.min(nearestExpiry, expiresAt);
                     }
                 }
             }
 
-            if (onComplete != null) onComplete.run();
-        }).addOnFailureListener(e -> {
-            Toast.makeText(TicketBookingActivity.this, "Failed to cleanup expired holds: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-            if (onComplete != null) onComplete.run();
-        });
+            callback.onCheck(hasActiveHold, nearestExpiry);
+        }).addOnFailureListener(e -> callback.onCheck(false, 0));
     }
 
 
+    private interface ActiveHoldCallback {
+        void onCheck(boolean hasActiveHold, long nearestExpiry);
+    }
 }

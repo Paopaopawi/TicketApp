@@ -18,6 +18,10 @@ import com.example.ticketapp.activities.TicketBookingActivity;
 import com.example.ticketapp.models.Event;
 import com.example.ticketapp.models.TicketFormData;
 import com.example.ticketapp.utils.FirebaseHelper;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -33,6 +37,19 @@ public class UserEventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private final Context context;
     private final List<Object> itemList;
     private final boolean isAdmin;
+
+    private final long BOOKING_COOLDOWN = 10 * 60 * 1000; // 10 minutes
+
+    // ------------------- CLICK LISTENER -------------------
+    public interface OnEventClickListener {
+        void onEventClick(Event event);
+    }
+
+    private OnEventClickListener eventClickListener;
+
+    public void setOnEventClickListener(OnEventClickListener listener) {
+        this.eventClickListener = listener;
+    }
 
     public UserEventAdapter(Context context, List<Object> itemList, boolean isAdmin) {
         this.context = context;
@@ -157,18 +174,15 @@ public class UserEventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 });
             }
 
-            // ------------------ Book Now Button ----------------
             if (isAdmin) {
-                btnBookNow.setVisibility(View.GONE); // Hide for admin
+                btnBookNow.setVisibility(View.GONE);
             } else {
                 btnBookNow.setVisibility(View.VISIBLE);
                 updateBookingButton(btnBookNow, e, totalAvailable);
 
                 btnBookNow.setOnClickListener(v -> {
-                    if (btnBookNow.isEnabled()) {
-                        Intent intent = new Intent(context, TicketBookingActivity.class);
-                        intent.putExtra("eventId", e.getEventId());
-                        context.startActivity(intent);
+                    if (btnBookNow.isEnabled() && eventClickListener != null) {
+                        eventClickListener.onEventClick(e);
                     }
                 });
             }
@@ -178,6 +192,10 @@ public class UserEventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             int finalTotalOnHold = totalOnHold;
 
             itemView.setOnClickListener(v -> {
+                if (eventClickListener != null) {
+                    eventClickListener.onEventClick(e);
+                }
+
                 android.app.AlertDialog dialog = new android.app.AlertDialog.Builder(context).create();
                 View dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_event_details, null);
                 TextView tvContent = dialogView.findViewById(R.id.tvDialogContent);
@@ -196,24 +214,20 @@ public class UserEventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
                 tvContent.setText(content.toString());
 
-                // Hide Book button in dialog for admin
                 if (isAdmin) {
                     tvBook.setVisibility(View.GONE);
                 } else {
                     tvBook.setVisibility(View.VISIBLE);
                     updateBookingButton(tvBook, e, finalTotalAvailable);
                     tvBook.setOnClickListener(x -> {
-                        if (tvBook.isEnabled()) {
+                        if (tvBook.isEnabled() && eventClickListener != null) {
+                            eventClickListener.onEventClick(e);
                             dialog.dismiss();
-                            Intent intent = new Intent(context, TicketBookingActivity.class);
-                            intent.putExtra("eventId", e.getEventId());
-                            context.startActivity(intent);
                         }
                     });
                 }
 
                 tvOk.setOnClickListener(x -> dialog.dismiss());
-
                 dialog.setView(dialogView);
                 dialog.show();
             });

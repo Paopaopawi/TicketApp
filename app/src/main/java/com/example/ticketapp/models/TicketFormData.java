@@ -9,10 +9,14 @@ public class TicketFormData implements Parcelable {
     private int price;
     private int availableQuantity;
     private int onHoldQuantity;
+    private String holdId;
+    private String eventId;
+    private String ticketKey;
+    private long holdExpiresAt;
 
-    public TicketFormData() {} // Firebase
+    public TicketFormData() {}
 
-    public TicketFormData(String name, String type, int price, int availableQuantity) {
+    public TicketFormData(String name, String type, int price, int availableQuantity, long expiresAt) {
         this.name = name;
         this.type = type;
         this.price = price;
@@ -20,13 +24,17 @@ public class TicketFormData implements Parcelable {
         this.onHoldQuantity = 0;
     }
 
-    // Parcelable implementation
+    // Parcelable constructor
     protected TicketFormData(Parcel in) {
         name = in.readString();
         type = in.readString();
         price = in.readInt();
         availableQuantity = in.readInt();
         onHoldQuantity = in.readInt();
+        holdId = in.readString();
+        eventId = in.readString();
+        ticketKey = in.readString();
+        holdExpiresAt = in.readLong();
     }
 
     public static final Creator<TicketFormData> CREATOR = new Creator<TicketFormData>() {
@@ -48,6 +56,10 @@ public class TicketFormData implements Parcelable {
         dest.writeInt(price);
         dest.writeInt(availableQuantity);
         dest.writeInt(onHoldQuantity);
+        dest.writeString(holdId);
+        dest.writeString(eventId);
+        dest.writeString(ticketKey);
+        dest.writeLong(holdExpiresAt);
     }
 
     @Override
@@ -70,4 +82,16 @@ public class TicketFormData implements Parcelable {
 
     public int getOnHoldQuantity() { return onHoldQuantity; }
     public void setOnHoldQuantity(int onHoldQuantity) { this.onHoldQuantity = onHoldQuantity; }
+
+    public String getHoldId() { return holdId; }
+    public void setHoldId(String holdId) { this.holdId = holdId; }
+
+    public String getEventId() { return eventId; }
+    public void setEventId(String eventId) { this.eventId = eventId; }
+
+    public String getTicketKey() { return ticketKey; }
+    public void setTicketKey(String ticketKey) { this.ticketKey = ticketKey; }
+
+    public long getExpiresAt() { return holdExpiresAt; }
+    public void setExpiresAt(long holdExpiresAt) { this.holdExpiresAt = holdExpiresAt; }
 }

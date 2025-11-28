@@ -1,5 +1,6 @@
 package com.example.ticketapp.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -18,7 +19,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.ticketapp.R;
 import com.example.ticketapp.adapters.UserEventAdapter;
 import com.example.ticketapp.models.Event;
+import com.example.ticketapp.models.User;
 import com.example.ticketapp.utils.FirebaseHelper;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
@@ -38,9 +41,10 @@ public class UserDashboardActivity extends AppCompatActivity {
 
     private final List<Event> allEvents = new ArrayList<>();
     private final List<Object> displayList = new ArrayList<>();
-
     private UserEventAdapter adapter;
     private final SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+
+    private final long BOOKING_COOLDOWN = 10 * 60 * 1000; // 10 minutes in milliseconds
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +63,7 @@ public class UserDashboardActivity extends AppCompatActivity {
         setupFilterDropdown();
         setupSearch();
         loadEvents();
+        setupEventClick();
     }
 
     private void setupFilterDropdown() {
@@ -80,9 +85,7 @@ public class UserDashboardActivity extends AppCompatActivity {
     }
 
     private void loadEvents() {
-
         FirebaseHelper.getEventsRef().addValueEventListener(new ValueEventListener() {
-
             @Override public void onDataChange(@NonNull DataSnapshot snapshot) {
                 allEvents.clear();
                 for (DataSnapshot ds : snapshot.getChildren()) {
@@ -91,7 +94,6 @@ public class UserDashboardActivity extends AppCompatActivity {
                 }
                 applyFilters();
             }
-
             @Override public void onCancelled(@NonNull DatabaseError error) {
                 Toast.makeText(UserDashboardActivity.this, "Error loading events: " + error.getMessage(), Toast.LENGTH_SHORT).show();
             }
@@ -182,5 +184,38 @@ public class UserDashboardActivity extends AppCompatActivity {
             Date eventDate = clearTime(sdf.parse(e.getDate()));
             return eventDate.before(today);
         } catch (Exception ex) { return false; }
+    }
+
+    // ------------------- NEW FUNCTION -------------------
+    private void setupEventClick() {
+        adapter.setOnEventClickListener(event -> {
+            String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            FirebaseHelper.getUsersRef().child(uid).child("lastBookingTimestamp")
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            long lastBooking = snapshot.exists() ? snapshot.getValue(Long.class) : 0;
+                            long now = System.currentTimeMillis();
+                            if (now - lastBooking < BOOKING_COOLDOWN) {
+                                long minutesLeft = (BOOKING_COOLDOWN - (now - lastBooking)) / 60000;
+                                Toast.makeText(UserDashboardActivity.this,
+                                        "You can book again in " + minutesLeft + " minutes.",
+                                        Toast.LENGTH_SHORT).show();
+                            } else {
+                                // Update last booking timestamp
+                                FirebaseHelper.getUsersRef().child(uid).child("lastBookingTimestamp")
+                                        .setValue(now);
+
+                                // Go to BookingTicketActivity
+                                Intent intent = new Intent(UserDashboardActivity.this, com.example.ticketapp.activities.TicketBookingActivity.class);
+                                intent.putExtra("eventId", event.getEventId());
+                                startActivity(intent);
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {}
+                    });
+        });
     }
 }

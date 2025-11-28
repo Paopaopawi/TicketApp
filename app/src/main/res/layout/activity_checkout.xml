@@ -30,11 +30,12 @@
         android:id="@+id/tvPaymentTimer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="05:00"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:textColor="@android:color/holo_red_dark"
-        android:layout_marginTop="8dp"/>
+        android:text="Expires in 00:00"
+        android:textColor="@color/primaryDark"
+        android:textSize="14sp"
+        android:layout_marginTop="4dp"/>
+
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvHeldTickets"

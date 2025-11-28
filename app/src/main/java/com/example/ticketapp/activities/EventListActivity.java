@@ -9,6 +9,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -48,6 +49,8 @@ public class EventListActivity extends AppCompatActivity {
     private boolean isAdmin = false; // user/admin flag
     private final SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
 
+    private final long BOOKING_COOLDOWN = 10 * 60 * 1000; // 10 minutes
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,6 +76,7 @@ public class EventListActivity extends AppCompatActivity {
         setupFilterDropdown();
         loadUserRole(); // fetch role and set access
         loadEvents();
+        setupEventClick();
     }
 
     private void loadUserRole() {
@@ -152,7 +156,6 @@ public class EventListActivity extends AppCompatActivity {
         });
     }
 
-
     private void applyFilters() {
         String search = etSearch.getText() != null ? etSearch.getText().toString().trim().toLowerCase() : "";
         String filter = spFilter.getSelectedItem() != null ? spFilter.getSelectedItem().toString() : "All";
@@ -209,4 +212,37 @@ public class EventListActivity extends AppCompatActivity {
     }
 
     private String safe(String s){ return s==null?"":s.toLowerCase(); }
+
+    // ------------------- NEW FUNCTION -------------------
+    private void setupEventClick() {
+        adapter.setOnEventClickListener(event -> {
+            String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            FirebaseHelper.getUsersRef().child(uid).child("lastBookingTimestamp")
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            long lastBooking = snapshot.exists() ? snapshot.getValue(Long.class) : 0;
+                            long now = System.currentTimeMillis();
+                            if (now - lastBooking < BOOKING_COOLDOWN) {
+                                long minutesLeft = (BOOKING_COOLDOWN - (now - lastBooking)) / 60000;
+                                Toast.makeText(EventListActivity.this,
+                                        "You can book again in " + minutesLeft + " minutes.",
+                                        Toast.LENGTH_SHORT).show();
+                            } else {
+                                // Update last booking timestamp
+                                FirebaseHelper.getUsersRef().child(uid).child("lastBookingTimestamp")
+                                        .setValue(now);
+
+                                // Go to BookingTicketActivity
+                                Intent intent = new Intent(EventListActivity.this, com.example.ticketapp.activities.TicketBookingActivity.class);
+                                intent.putExtra("eventId", event.getEventId());
+                                startActivity(intent);
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {}
+                    });
+        });
+    }
 }

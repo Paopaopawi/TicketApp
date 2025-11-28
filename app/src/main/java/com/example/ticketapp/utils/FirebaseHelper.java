@@ -8,6 +8,7 @@ public class FirebaseHelper {
 
     public static DatabaseReference getUsersRef() { return database.getReference("users"); }
     public static DatabaseReference getEventsRef() { return database.getReference("events"); }
-    public static DatabaseReference getReservationsRef() { return database.getReference("reservations"); }
-    // Add other common refs if you need
+    public static DatabaseReference getHoldsRef() {
+        return FirebaseDatabase.getInstance().getReference("holds");
+    }
 }

@@ -1,7 +1,6 @@
 package com.example.ticketapp.adapters;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.ticketapp.R;
-import com.example.ticketapp.activities.AddEditEventActivity;
 import com.example.ticketapp.models.Event;
 
 import java.util.List;
@@ -23,11 +21,10 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     private final Context context;
     private final List<Object> items;
-    private final boolean isAdmin;
-
     private final OnEventClickListener onEventClick;
     private final OnEditClickListener onEditClick;
     private final OnDeleteClickListener onDeleteClick;
+    private final boolean isAdmin;
 
     public interface OnEventClickListener { void onEventClick(Event e); }
     public interface OnEditClickListener { void onEditClick(Event e); }
@@ -55,20 +52,20 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(context);
-        if (viewType == TYPE_HEADER) {
-            View view = inflater.inflate(R.layout.item_event_header, parent, false);
-            return new HeaderViewHolder(view);
+        if(viewType == TYPE_HEADER){
+            View v = inflater.inflate(R.layout.item_event_header, parent, false);
+            return new HeaderViewHolder(v);
         } else {
-            View view = inflater.inflate(R.layout.item_event, parent, false);
-            return new EventViewHolder(view);
+            View v = inflater.inflate(R.layout.item_event, parent, false);
+            return new EventViewHolder(v);
         }
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        if (holder instanceof HeaderViewHolder) {
+        if(holder instanceof HeaderViewHolder){
             ((HeaderViewHolder) holder).bind((String) items.get(position));
-        } else if (holder instanceof EventViewHolder) {
+        } else {
             ((EventViewHolder) holder).bind((Event) items.get(position));
         }
     }
@@ -78,17 +75,13 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         return items != null ? items.size() : 0;
     }
 
-    // ------------------- ViewHolders -------------------
-
-    static class HeaderViewHolder extends RecyclerView.ViewHolder {
+    class HeaderViewHolder extends RecyclerView.ViewHolder {
         TextView tvHeader;
-
-        HeaderViewHolder(@NonNull View itemView) {
+        public HeaderViewHolder(@NonNull View itemView) {
             super(itemView);
             tvHeader = itemView.findViewById(R.id.tvHeader);
         }
-
-        void bind(String header) {
+        void bind(String header){
             tvHeader.setText(header != null ? header : "");
         }
     }
@@ -103,30 +96,24 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             tvEdit = itemView.findViewById(R.id.tvEdit);
             tvDelete = itemView.findViewById(R.id.tvDelete);
 
-            // Click: Open Event
             itemView.setOnClickListener(v -> {
                 int pos = getAdapterPosition();
-                if (pos != RecyclerView.NO_POSITION && onEventClick != null)
-                    onEventClick.onEventClick((Event) items.get(pos));
+                if(pos != RecyclerView.NO_POSITION) onEventClick.onEventClick((Event) items.get(pos));
             });
 
-            // Click: Edit Event
             tvEdit.setOnClickListener(v -> {
                 int pos = getAdapterPosition();
-                if (pos != RecyclerView.NO_POSITION && onEditClick != null)
-                    onEditClick.onEditClick((Event) items.get(pos));
+                if(pos != RecyclerView.NO_POSITION) onEditClick.onEditClick((Event) items.get(pos));
             });
 
-            // Click: Delete Event
             tvDelete.setOnClickListener(v -> {
                 int pos = getAdapterPosition();
-                if (pos != RecyclerView.NO_POSITION && onDeleteClick != null)
-                    onDeleteClick.onDeleteClick((Event) items.get(pos));
+                if(pos != RecyclerView.NO_POSITION) onDeleteClick.onDeleteClick((Event) items.get(pos));
             });
         }
 
-        void bind(Event e) {
-            if (e == null) return;
+        void bind(Event e){
+            if(e == null) return;
 
             tvTitle.setText(e.getTitle() != null ? e.getTitle() : "-");
             tvDate.setText(e.getDate() != null ? e.getDate() : "-");
