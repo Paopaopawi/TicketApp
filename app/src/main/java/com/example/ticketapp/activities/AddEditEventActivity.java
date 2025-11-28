@@ -108,10 +108,16 @@ public class AddEditEventActivity extends AppCompatActivity {
 
 
     private void addTicketForm(TicketFormData data) {
-        TicketForm ticketForm = new TicketForm(this, ticketsContainer, data);
+        // Only pass context and optional data
+        TicketForm ticketForm = new TicketForm(this, data);
+
+        // Add the TicketForm to the container
         ticketsContainer.addView(ticketForm);
+
+        // Keep a reference
         ticketForms.add(ticketForm);
     }
+
 
     private void loadEventData() {
         FirebaseHelper.getEventsRef().child(eventId)
@@ -143,6 +149,7 @@ public class AddEditEventActivity extends AppCompatActivity {
                     }
                 });
     }
+
 
     private void saveEvent() {
         // Reset errors

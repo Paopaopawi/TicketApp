@@ -4,28 +4,29 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class TicketFormData implements Parcelable {
-
     private String name;
     private String type;
     private int price;
-    private int quantity;
+    private int availableQuantity;
+    private int onHoldQuantity;
 
-    // Default constructor required for Firebase
-    public TicketFormData() {}
+    public TicketFormData() {} // Firebase
 
-    public TicketFormData(String name, String type, int price, int quantity) {
+    public TicketFormData(String name, String type, int price, int availableQuantity) {
         this.name = name;
         this.type = type;
         this.price = price;
-        this.quantity = quantity;
+        this.availableQuantity = availableQuantity;
+        this.onHoldQuantity = 0;
     }
 
-    // --- Parcelable constructor ---
+    // Parcelable implementation
     protected TicketFormData(Parcel in) {
         name = in.readString();
         type = in.readString();
         price = in.readInt();
-        quantity = in.readInt();
+        availableQuantity = in.readInt();
+        onHoldQuantity = in.readInt();
     }
 
     public static final Creator<TicketFormData> CREATOR = new Creator<TicketFormData>() {
@@ -41,28 +42,32 @@ public class TicketFormData implements Parcelable {
     };
 
     @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(name);
+        dest.writeString(type);
+        dest.writeInt(price);
+        dest.writeInt(availableQuantity);
+        dest.writeInt(onHoldQuantity);
+    }
+
+    @Override
     public int describeContents() {
         return 0;
     }
 
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(name);
-        parcel.writeString(type);
-        parcel.writeInt(price);
-        parcel.writeInt(quantity);
-    }
-
-    // --- Getters ---
+    // Getters & Setters
     public String getName() { return name; }
-    public String getType() { return type; }
-    public int getPrice() { return price; }
-    public int getQuantity() { return quantity; }
-    public String getTypeName() { return type; }
-
-    // --- Setters ---
     public void setName(String name) { this.name = name; }
+
+    public String getType() { return type; }
     public void setType(String type) { this.type = type; }
+
+    public int getPrice() { return price; }
     public void setPrice(int price) { this.price = price; }
-    public void setQuantity(int quantity) { this.quantity = quantity; }
+
+    public int getAvailableQuantity() { return availableQuantity; }
+    public void setAvailableQuantity(int availableQuantity) { this.availableQuantity = availableQuantity; }
+
+    public int getOnHoldQuantity() { return onHoldQuantity; }
+    public void setOnHoldQuantity(int onHoldQuantity) { this.onHoldQuantity = onHoldQuantity; }
 }

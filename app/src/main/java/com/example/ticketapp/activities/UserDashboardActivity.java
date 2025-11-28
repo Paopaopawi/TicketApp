@@ -80,7 +80,9 @@ public class UserDashboardActivity extends AppCompatActivity {
     }
 
     private void loadEvents() {
+
         FirebaseHelper.getEventsRef().addValueEventListener(new ValueEventListener() {
+
             @Override public void onDataChange(@NonNull DataSnapshot snapshot) {
                 allEvents.clear();
                 for (DataSnapshot ds : snapshot.getChildren()) {

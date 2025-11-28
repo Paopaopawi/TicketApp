@@ -7,7 +7,6 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <!-- Header -->
     <TextView
         android:id="@+id/tvPaymentTitle"
         android:layout_width="wrap_content"
@@ -16,7 +15,6 @@
         android:textSize="20sp"
         android:textStyle="bold"/>
 
-    <!-- Payment Instructions / Warning -->
     <TextView
         android:id="@+id/tvPaymentWarning"
         android:layout_width="match_parent"
@@ -27,6 +25,7 @@
         android:background="#FFF3CD"
         android:textColor="#856404"
         android:layout_marginTop="8dp"/>
+
     <TextView
         android:id="@+id/tvPaymentTimer"
         android:layout_width="wrap_content"
@@ -35,6 +34,13 @@
         android:textSize="18sp"
         android:textStyle="bold"
         android:textColor="@android:color/holo_red_dark"
+        android:layout_marginTop="8dp"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvHeldTickets"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:layout_marginTop="8dp"/>
 
     <!-- Order Summary Box -->
@@ -68,7 +74,6 @@
             android:textColor="@android:color/black"/>
     </LinearLayout>
 
-    <!-- Payment Method Selection -->
     <TextView
         android:id="@+id/tvSelectPaymentMethod"
         android:layout_width="wrap_content"
@@ -84,7 +89,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"/>
 
-    <!-- Proceed Button -->
     <Button
         android:id="@+id/btnProceedPayment"
         android:layout_width="match_parent"

@@ -15,7 +15,6 @@ import com.example.ticketapp.models.TicketFormData;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.IntStream;
 
 public class TicketSelectionAdapter extends RecyclerView.Adapter<TicketSelectionAdapter.TicketViewHolder> {
 
@@ -32,8 +31,8 @@ public class TicketSelectionAdapter extends RecyclerView.Adapter<TicketSelection
     @NonNull
     @Override
     public TicketViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_ticket_selection, parent, false);
-        return new TicketViewHolder(view);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_ticket_selection, parent, false);
+        return new TicketViewHolder(v);
     }
 
     @Override
@@ -41,14 +40,24 @@ public class TicketSelectionAdapter extends RecyclerView.Adapter<TicketSelection
         TicketFormData t = tickets.get(position);
         holder.tvName.setText(t.getName());
         holder.tvPrice.setText("₱" + t.getPrice() + " / ticket");
-        holder.tvAvailable.setText("Available: " + t.getQuantity());
+
+        int freeQty = Math.max(0, t.getAvailableQuantity() - t.getOnHoldQuantity());
+        holder.tvAvailable.setText("Available: " + freeQty + " | On Hold: " + t.getOnHoldQuantity());
 
         Integer currentSelected = selectedQuantities.getOrDefault(t.getName(), 0);
-        Integer[] options = IntStream.rangeClosed(0, Math.min(4, t.getQuantity())).boxed().toArray(Integer[]::new);
-        ArrayAdapter<Integer> spinnerAdapter = new ArrayAdapter<>(holder.itemView.getContext(), android.R.layout.simple_spinner_item, options);
+        int maxSelectable = Math.min(4, freeQty); // enforce max 4 per user
+        Integer[] options = new Integer[maxSelectable + 1];
+        for (int i = 0; i <= maxSelectable; i++) options[i] = i;
+
+        ArrayAdapter<Integer> spinnerAdapter = new ArrayAdapter<>(holder.itemView.getContext(),
+                android.R.layout.simple_spinner_item, options);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
         holder.spinnerQuantity.setAdapter(spinnerAdapter);
-        holder.spinnerQuantity.setSelection(currentSelected);
+
+        // safe selection (in case previous selected > available)
+        int sel = Math.min(currentSelected, maxSelectable);
+        holder.spinnerQuantity.setSelection(sel);
 
         holder.spinnerQuantity.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
             @Override

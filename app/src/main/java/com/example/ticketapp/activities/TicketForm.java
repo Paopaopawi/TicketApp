@@ -3,7 +3,7 @@ package com.example.ticketapp.activities;
 import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.LayoutInflater;
+import android.util.AttributeSet;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -21,10 +21,25 @@ public class TicketForm extends LinearLayout {
 
     private TextInputLayout tilName, tilPrice, tilType, tilQuantity;
     private TextInputEditText etName, etPrice, etType, etQuantity;
-    private TicketFormData data;
 
-    public TicketForm(Context context, LinearLayout parent, @Nullable TicketFormData data){
+    private boolean editing;
+
+    public TicketForm(Context context) {
         super(context);
+        init(context, null);
+    }
+
+    public TicketForm(Context context, @Nullable AttributeSet attrs) {
+        super(context, attrs);
+        init(context, null);
+    }
+
+    public TicketForm(Context context, @Nullable TicketFormData data) {
+        super(context);
+        init(context, data);
+    }
+
+    private void init(Context context, @Nullable TicketFormData data){
         inflate(context, R.layout.ticket_form_layout, this);
 
         tilName = findViewById(R.id.tilTicketName);
@@ -41,12 +56,11 @@ public class TicketForm extends LinearLayout {
             etName.setText(data.getName());
             etType.setText(data.getType());
             etPrice.setText(String.valueOf(data.getPrice()));
-            etQuantity.setText(String.valueOf(data.getQuantity()));
+            etQuantity.setText(String.valueOf(data.getAvailableQuantity()));
         }
 
-        // price formatting
+        // Price formatting
         etPrice.addTextChangedListener(new TextWatcher() {
-            boolean editing;
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override
@@ -59,8 +73,9 @@ public class TicketForm extends LinearLayout {
                 if(!str.isEmpty()){
                     try {
                         long value = Long.parseLong(str);
-                        etPrice.setText("₱"+NumberFormat.getNumberInstance(Locale.US).format(value));
-                        etPrice.setSelection(etPrice.getText().length());
+                        String formatted = "₱"+ NumberFormat.getNumberInstance(Locale.getDefault()).format(value);
+                        etPrice.setText(formatted);
+                        etPrice.setSelection(formatted.length());
                     } catch (NumberFormatException ignored){}
                 }
                 editing = false;
@@ -68,7 +83,7 @@ public class TicketForm extends LinearLayout {
         });
     }
 
-    public TicketFormData getData(){
+    public TicketFormData getData() {
         String name = etName.getText() != null ? etName.getText().toString().trim() : "";
         String type = etType.getText() != null ? etType.getText().toString().trim() : "";
         String priceStr = etPrice.getText() != null ? etPrice.getText().toString().replaceAll("[₱,]", "") : "";
@@ -84,8 +99,16 @@ public class TicketForm extends LinearLayout {
         try {
             int price = Integer.parseInt(priceStr);
             int quantity = Integer.parseInt(quantityStr);
-            return new TicketFormData(name, type, price, quantity);
-        } catch (NumberFormatException e){
+
+            TicketFormData t = new TicketFormData();
+            t.setName(name);
+            t.setType(type);
+            t.setPrice(price);
+            t.setAvailableQuantity(quantity);
+            t.setOnHoldQuantity(0);
+
+            return t;
+        } catch (NumberFormatException e) {
             Toast.makeText(getContext(), "Invalid price or quantity", Toast.LENGTH_SHORT).show();
             return null;
         }
