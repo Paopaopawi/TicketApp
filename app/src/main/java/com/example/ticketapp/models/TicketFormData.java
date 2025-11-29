@@ -13,15 +13,30 @@ public class TicketFormData implements Parcelable {
     private String eventId;
     private String ticketKey;
     private long holdExpiresAt;
+    private String ticketCode;
 
-    public TicketFormData() {}
+    // ---------------- Constructors ----------------
+    public TicketFormData() {} // Default
 
-    public TicketFormData(String name, String type, int price, int availableQuantity, long expiresAt) {
+    // Full constructor (all fields you usually need)
+    public TicketFormData(String name, String type, int price, int availableQuantity, long expiresAt, String ticketCode) {
         this.name = name;
         this.type = type;
         this.price = price;
         this.availableQuantity = availableQuantity;
         this.onHoldQuantity = 0;
+        this.holdExpiresAt = expiresAt;
+        this.ticketCode = ticketCode;
+    }
+
+    // Overload for convenience (without ticketCode)
+    public TicketFormData(String name, String type, int price, int availableQuantity, long expiresAt) {
+        this(name, type, price, availableQuantity, expiresAt, null);
+    }
+
+    // Overload for convenience (int expiresAt instead of long)
+    public TicketFormData(String name, String type, int price, int availableQuantity, int expiresAt) {
+        this(name, type, price, availableQuantity, (long) expiresAt, null);
     }
 
     // Parcelable constructor
@@ -35,6 +50,7 @@ public class TicketFormData implements Parcelable {
         eventId = in.readString();
         ticketKey = in.readString();
         holdExpiresAt = in.readLong();
+        ticketCode = in.readString();
     }
 
     public static final Creator<TicketFormData> CREATOR = new Creator<TicketFormData>() {
@@ -60,6 +76,7 @@ public class TicketFormData implements Parcelable {
         dest.writeString(eventId);
         dest.writeString(ticketKey);
         dest.writeLong(holdExpiresAt);
+        dest.writeString(ticketCode);
     }
 
     @Override
@@ -67,7 +84,7 @@ public class TicketFormData implements Parcelable {
         return 0;
     }
 
-    // Getters & Setters
+    // ---------------- Getters & Setters ----------------
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 
@@ -92,6 +109,9 @@ public class TicketFormData implements Parcelable {
     public String getTicketKey() { return ticketKey; }
     public void setTicketKey(String ticketKey) { this.ticketKey = ticketKey; }
 
-    public long getExpiresAt() { return holdExpiresAt; }
-    public void setExpiresAt(long holdExpiresAt) { this.holdExpiresAt = holdExpiresAt; }
+    public long getPerHoldExpiry() { return holdExpiresAt; }
+    public void setPerHoldExpiry(long holdExpiresAt) { this.holdExpiresAt = holdExpiresAt; }
+
+    public String getTicketCode() { return ticketCode; }
+    public void setTicketCode(String ticketCode) { this.ticketCode = ticketCode; }
 }

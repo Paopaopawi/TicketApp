@@ -30,7 +30,9 @@
         <activity android:name=".activities.AddEditEventActivity" android:exported="true"/>
         <activity android:name=".activities.TicketBookingActivity" android:exported="true"/>
         <activity android:name=".activities.CheckOutActivity" android:exported="true"/>
+        <activity android:name=".activities.PaymentSuccess" android:exported="true"/>
+        <activity android:name=".activities.UserTicketsActivity" android:exported="true"/>
 
-</application>
+    </application>
 
 </manifest>

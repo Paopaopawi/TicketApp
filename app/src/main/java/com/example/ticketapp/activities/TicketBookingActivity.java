@@ -1,6 +1,7 @@
 package com.example.ticketapp.activities;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -85,7 +86,7 @@ public class TicketBookingActivity extends AppCompatActivity {
                                 Toast.LENGTH_LONG
                         ).show();
                     } else {
-                        holdAndProceed(); // cleaned holdAndProceed
+                        holdAndProceed();
                     }
                 });
             });
@@ -124,7 +125,10 @@ public class TicketBookingActivity extends AppCompatActivity {
     private void updateTotals() {
         int subtotal = 0;
         for (TicketFormData t : ticketsList) {
-            int qty = selectedQuantities.getOrDefault(t.getName(), 0);
+            int qty = 0;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                qty = selectedQuantities.getOrDefault(t.getName(), 0);
+            }
             subtotal += qty * t.getPrice();
         }
         int serviceFee = (int) Math.round(subtotal * SERVICE_FEE_PERCENT);
@@ -136,7 +140,6 @@ public class TicketBookingActivity extends AppCompatActivity {
         tvTotalDue.setText("TOTAL DUE: ₱" + nf.format(total));
     }
 
-    // ---------- CLEANED holdAndProceed ----------
     private void holdAndProceed() {
         Map<String, Integer> toHold = new HashMap<>();
         int subtotal = 0;
@@ -156,10 +159,8 @@ public class TicketBookingActivity extends AppCompatActivity {
 
         final int serviceFee = (int) Math.round(subtotal * SERVICE_FEE_PERCENT);
         final int totalDue = subtotal + serviceFee;
-
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         DatabaseReference ticketsRef = FirebaseHelper.getEventsRef().child(eventId).child("tickets");
-
         final List<TicketFormData> heldTicketsForIntent = new ArrayList<>();
 
         for (Map.Entry<String, Integer> entry : toHold.entrySet()) {
@@ -179,43 +180,43 @@ public class TicketBookingActivity extends AppCompatActivity {
                     if (freeQty < qty) return Transaction.abort();
 
                     MutableData holdsNode = currentData.child("holds");
-                    boolean userHoldExists = false;
-                    String userHoldId = null;
 
-                    if (holdsNode.getValue() != null) {
-                        for (MutableData holdSnap : holdsNode.getChildren()) {
-                            String holdUserId = holdSnap.child("userId").getValue(String.class);
-                            if (uid.equals(holdUserId)) {
-                                userHoldExists = true;
-                                userHoldId = holdSnap.getKey();
-                                break;
-                            }
-                        }
-                    }
+                    // create per-hold expiresAt in memory only
+                    long holdExpiresAt = System.currentTimeMillis() + (5 * 60 * 1000L);
 
-                    long expiresAt = System.currentTimeMillis() + (5 * 60 * 1000L);
+                    // create hold node in Firebase
+                    String newHoldId = UUID.randomUUID().toString();
+                    Map<String, Object> holdData = new HashMap<>();
+                    holdData.put("userId", uid);
+                    holdData.put("quantity", qty);
+                    holdData.put("expiresAt", holdExpiresAt);
+                    holdsNode.child(newHoldId).setValue(holdData);
 
-                    if (userHoldExists && userHoldId != null) {
-                        int existingQty = holdsNode.child(userHoldId).child("quantity").getValue(Integer.class) != null
-                                ? holdsNode.child(userHoldId).child("quantity").getValue(Integer.class)
-                                : 0;
-                        holdsNode.child(userHoldId).child("quantity").setValue(existingQty + qty);
-                        holdsNode.child(userHoldId).child("expiresAt").setValue(expiresAt);
-                    } else {
-                        String newHoldId = UUID.randomUUID().toString();
-                        Map<String, Object> holdData = new HashMap<>();
-                        holdData.put("userId", uid);
-                        holdData.put("quantity", qty);
-                        holdData.put("expiresAt", expiresAt);
-                        holdsNode.child(newHoldId).setValue(holdData);
-                        userHoldId = newHoldId;
-                    }
-
-                    // Update ticket quantities only
+                    // update ticket quantities
                     t.setAvailableQuantity(freeQty - qty);
                     t.setOnHoldQuantity(t.getOnHoldQuantity() + qty);
                     currentData.child("availableQuantity").setValue(t.getAvailableQuantity());
                     currentData.child("onHoldQuantity").setValue(t.getOnHoldQuantity());
+
+                    // create checkout copy
+                    TicketFormData copy = new TicketFormData(
+                            t.getName(),
+                            t.getType(),
+                            t.getPrice(),
+                            t.getAvailableQuantity(),
+                            0
+                    );
+
+                    copy.setName(t.getName());
+                    copy.setType(t.getType());
+                    copy.setPrice(t.getPrice());
+                    copy.setOnHoldQuantity(qty);
+                    copy.setEventId(eventId);
+                    copy.setTicketKey(key);
+                    copy.setHoldId(newHoldId);
+                    copy.setPerHoldExpiry(holdExpiresAt);
+
+                    heldTicketsForIntent.add(copy);
 
                     return Transaction.success(currentData);
                 }
@@ -226,36 +227,6 @@ public class TicketBookingActivity extends AppCompatActivity {
                         Toast.makeText(TicketBookingActivity.this, "Failed to hold tickets", Toast.LENGTH_SHORT).show();
                         return;
                     }
-
-                    // Create checkout copy reading expiresAt from the hold node
-                    TicketFormData t = currentData.getValue(TicketFormData.class);
-                    if (t == null) return;
-
-                    DataSnapshot holdsSnap = currentData.child("holds");
-                    long expiresAt = 0;
-                    String holdId = null;
-                    for (DataSnapshot holdSnap : holdsSnap.getChildren()) {
-                        String holdUser = holdSnap.child("userId").getValue(String.class);
-                        if (uid.equals(holdUser)) {
-                            holdId = holdSnap.getKey();
-                            Long exp = holdSnap.child("expiresAt").getValue(Long.class);
-                            if (exp != null) expiresAt = exp;
-                            break;
-                        }
-                    }
-
-                    TicketFormData copy = new TicketFormData(
-                            t.getName(),
-                            t.getType(),
-                            t.getPrice(),
-                            t.getAvailableQuantity(),
-                            expiresAt // only from hold
-                    );
-                    copy.setOnHoldQuantity(toHold.get(t.getName()));
-                    copy.setHoldId(holdId);
-                    copy.setEventId(eventId);
-                    copy.setTicketKey(key);
-                    heldTicketsForIntent.add(copy);
 
                     if (heldTicketsForIntent.size() == toHold.size()) {
                         Intent it = new Intent(TicketBookingActivity.this, CheckOutActivity.class);
@@ -268,8 +239,6 @@ public class TicketBookingActivity extends AppCompatActivity {
         }
     }
 
-
-    // ---------- CLEANED cleanupExpiredHolds ----------
     private void cleanupExpiredHolds(Runnable onComplete) {
         DatabaseReference ticketsRef = FirebaseHelper.getEventsRef().child(eventId).child("tickets");
         long now = System.currentTimeMillis();
@@ -292,22 +261,26 @@ public class TicketBookingActivity extends AppCompatActivity {
                             List<String> expiredHoldKeys = new ArrayList<>();
 
                             for (MutableData holdSnap : holdsNode.getChildren()) {
-                                Long expiresAt = holdSnap.child("expiresAt").getValue(Long.class);
+                                Long holdExpiry = holdSnap.child("expiresAt").getValue(Long.class);
                                 Integer qty = holdSnap.child("quantity").getValue(Integer.class);
                                 if (qty == null) qty = 0;
 
-                                if (expiresAt != null && expiresAt <= now) {
+                                if (holdExpiry == null || holdExpiry <= now) {
                                     expiredHoldKeys.add(holdSnap.getKey());
                                 } else {
                                     activeOnHold += qty;
                                 }
                             }
 
-                            for (String holdKey : expiredHoldKeys) holdsNode.child(holdKey).setValue(null);
+                            for (String expiredKey : expiredHoldKeys) {
+                                holdsNode.child(expiredKey).setValue(null);
+                            }
 
                             int totalTickets = ticketData.getAvailableQuantity() + ticketData.getOnHoldQuantity();
+                            int newAvailable = Math.max(totalTickets - activeOnHold, 0);
+
+                            currentData.child("availableQuantity").setValue(newAvailable);
                             currentData.child("onHoldQuantity").setValue(activeOnHold);
-                            currentData.child("availableQuantity").setValue(Math.max(totalTickets - activeOnHold, 0));
                         }
 
                         return Transaction.success(currentData);
@@ -317,11 +290,13 @@ public class TicketBookingActivity extends AppCompatActivity {
                     public void onComplete(@NonNull DatabaseError error, boolean committed, DataSnapshot currentData) { }
                 });
             }
+
             if (onComplete != null) onComplete.run();
-        }).addOnFailureListener(e -> { if (onComplete != null) onComplete.run(); });
+        }).addOnFailureListener(e -> {
+            if (onComplete != null) onComplete.run();
+        });
     }
 
-    // ---------- CLEANED checkUserActiveHold ----------
     private void checkUserActiveHold(String uid, ActiveHoldCallback callback) {
         DatabaseReference ticketsRef = FirebaseHelper.getEventsRef().child(eventId).child("tickets");
 
@@ -345,7 +320,6 @@ public class TicketBookingActivity extends AppCompatActivity {
             callback.onCheck(hasActiveHold, nearestExpiry);
         }).addOnFailureListener(e -> callback.onCheck(false, 0));
     }
-
 
     private interface ActiveHoldCallback {
         void onCheck(boolean hasActiveHold, long nearestExpiry);

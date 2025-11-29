@@ -5,43 +5,75 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:background="@android:color/white">
 
-    <TextView
-        android:id="@+id/tvPaymentTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Payment"
-        android:textSize="20sp"
-        android:textStyle="bold"/>
+    <!-- App Bar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingTop="25dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:background="#1E88E5">
 
-    <TextView
-        android:id="@+id/tvPaymentWarning"
+        <TextView
+            android:id="@+id/tvAppTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TicketApp"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/white"/>
+    </LinearLayout>
+
+    <!-- Payment Header -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Please review your order and complete the payment."
-        android:textSize="14sp"
-        android:padding="8dp"
-        android:background="#FFF3CD"
-        android:textColor="#856404"
-        android:layout_marginTop="8dp"/>
+        android:orientation="vertical"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp">
 
-    <TextView
-        android:id="@+id/tvPaymentTimer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Expires in 00:00"
-        android:textColor="@color/primaryDark"
-        android:textSize="14sp"
-        android:layout_marginTop="4dp"/>
+        <TextView
+            android:id="@+id/tvPaymentTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Payment"
+            android:textSize="20sp"
+            android:textStyle="bold"/>
 
+        <TextView
+            android:id="@+id/tvPaymentWarning"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Please review your order and complete the payment."
+            android:textSize="14sp"
+            android:padding="8dp"
+            android:background="#FFF3CD"
+            android:textColor="#856404"
+            android:layout_marginTop="8dp"/>
 
+        <TextView
+            android:id="@+id/tvPaymentTimer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Expires in 00:00"
+            android:textColor="@color/primaryDark"
+            android:textSize="14sp"
+            android:layout_marginTop="4dp"/>
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvHeldTickets"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
         android:layout_marginTop="8dp"/>
 
     <!-- Order Summary Box -->
@@ -52,7 +84,9 @@
         android:orientation="vertical"
         android:padding="8dp"
         android:background="#EEEEEE"
-        android:layout_marginTop="8dp">
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp">
 
         <TextView
             android:id="@+id/tvPaymentSubtotal"
@@ -82,13 +116,16 @@
         android:text="Select Payment Method"
         android:textSize="16sp"
         android:textStyle="bold"
-        android:layout_marginTop="16dp"/>
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="20dp"/>
 
     <Spinner
         android:id="@+id/spinnerPaymentMethod"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"/>
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"/>
 
     <Button
         android:id="@+id/btnProceedPayment"
@@ -97,5 +134,7 @@
         android:text="PROCEED TO PAY"
         android:layout_marginTop="16dp"
         android:backgroundTint="@android:color/holo_blue_dark"
-        android:textColor="@android:color/white"/>
+        android:textColor="@android:color/white"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"/>
 </LinearLayout>

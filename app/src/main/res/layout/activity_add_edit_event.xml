@@ -1,113 +1,142 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@android:color/white">
 
+    <!-- App Bar -->
     <LinearLayout
-        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingTop="25dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:background="#1E88E5">
+
+        <TextView
+            android:id="@+id/tvAppTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TicketApp"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/white"/>
+    </LinearLayout>
+
+    <!-- Content -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
         android:paddingBottom="16dp"
-        android:paddingTop="70dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:paddingTop="16dp">
 
-        <!-- Event Name -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tilEventName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Event Name">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etEventName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- Event Date -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tilEventDate"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Event Date"
-            android:layout_marginTop="12dp">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etEventDate"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:focusable="false"
-                android:clickable="true"/>
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- Sale Start -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tilSaleStart"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Sale Start Date &amp; Time"
-            android:layout_marginTop="12dp">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etSaleStart"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:focusable="false"
-                android:clickable="true"/>
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- Sale End -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tilSaleEnd"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Sale End Date &amp; Time"
-            android:layout_marginTop="12dp">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etSaleEnd"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:focusable="false"
-                android:clickable="true"/>
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- Event Details -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tilEventDetails"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Event Details"
-            android:layout_marginTop="12dp">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etEventDetails"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="top"
-                android:minLines="3"/>
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- Tickets Container -->
         <LinearLayout
-            android:id="@+id/ticketsContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_marginTop="16dp"/>
-
-        <!-- Add More Ticket Button -->
-        <Button
-            android:id="@+id/btnAddTicket"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Add More Ticket"
-            android:layout_marginTop="12dp"/>
+            android:layout_height="wrap_content">
 
-        <!-- Save Event Button -->
-        <Button
-            android:id="@+id/btnSaveEvent"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Save Event"
-            android:layout_marginTop="16dp"/>
-    </LinearLayout>
-</ScrollView>
+            <!-- Event Name -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilEventName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Event Name">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etEventName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Event Date -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilEventDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Event Date"
+                android:layout_marginTop="12dp">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etEventDate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:focusable="false"
+                    android:clickable="true"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Sale Start -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilSaleStart"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Sale Start Date &amp; Time"
+                android:layout_marginTop="12dp">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etSaleStart"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:focusable="false"
+                    android:clickable="true"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Sale End -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilSaleEnd"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Sale End Date &amp; Time"
+                android:layout_marginTop="12dp">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etSaleEnd"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:focusable="false"
+                    android:clickable="true"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Event Details -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilEventDetails"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Event Details"
+                android:layout_marginTop="12dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etEventDetails"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="top"
+                    android:minLines="3"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Tickets Container -->
+            <LinearLayout
+                android:id="@+id/ticketsContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="16dp"/>
+
+            <!-- Add More Ticket Button -->
+            <Button
+                android:id="@+id/btnAddTicket"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Add More Ticket"
+                android:layout_marginTop="12dp"/>
+
+            <!-- Save Event Button -->
+            <Button
+                android:id="@+id/btnSaveEvent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Save Event"
+                android:layout_marginTop="16dp"/>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

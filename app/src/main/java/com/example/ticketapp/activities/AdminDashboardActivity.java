@@ -17,13 +17,10 @@ public class AdminDashboardActivity extends AppCompatActivity {
 
         // Find CardViews
         cardEvent = findViewById(R.id.cardEventManagement);
-        cardReservation = findViewById(R.id.cardReservationManagement);
         cardReports = findViewById(R.id.cardReports);
 
         // Set click listeners
         cardEvent.setOnClickListener(v -> openActivity(EventListActivity.class));
-        cardReservation.setOnClickListener(v -> openActivity(ReservationListActivity.class));
-        cardReports.setOnClickListener(v -> openActivity(ReportsActivity.class));
     }
 
     private void openActivity(Class<?> activityClass){

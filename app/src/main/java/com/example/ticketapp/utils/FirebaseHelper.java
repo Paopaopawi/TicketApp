@@ -1,5 +1,6 @@
 package com.example.ticketapp.utils;
 
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -11,4 +12,8 @@ public class FirebaseHelper {
     public static DatabaseReference getHoldsRef() {
         return FirebaseDatabase.getInstance().getReference("holds");
     }
+    public static DatabaseReference getRootRef() {
+        return FirebaseDatabase.getInstance().getReference();
+    }
+
 }

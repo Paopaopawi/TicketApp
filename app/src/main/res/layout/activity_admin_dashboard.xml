@@ -1,88 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    android:orientation="vertical"
+    android:background="@android:color/white">
 
-    <GridLayout
-        android:id="@+id/gridDashboard"
+    <!-- App Bar -->
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:columnCount="2"
-        android:rowCount="3"
+        android:layout_height="70dp"
         android:orientation="horizontal"
-        android:alignmentMode="alignMargins"
-        android:columnOrderPreserved="false"
-        android:useDefaultMargins="true">
+        android:gravity="center_vertical"
+        android:paddingTop="25dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:background="#1E88E5">
 
-        <!-- Event Management -->
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardEventManagement"
-            android:layout_width="0dp"
-            android:layout_height="150dp"
-            android:layout_columnWeight="1"
-            android:layout_rowWeight="1"
-            android:layout_margin="8dp"
-            app:cardCornerRadius="16dp"
-            android:backgroundTint="#FFB74D">
+        <TextView
+            android:id="@+id/tvAppTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TicketApp"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/white"/>
+    </LinearLayout>
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="Event Management"
-                android:textSize="18sp"
-                android:textColor="@android:color/white"
-                android:gravity="center"
-                android:textStyle="bold"/>
-        </androidx.cardview.widget.CardView>
+    <!-- Dashboard Content -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp">
 
-        <!-- Reservation Management -->
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardReservationManagement"
-            android:layout_width="0dp"
-            android:layout_height="150dp"
-            android:layout_columnWeight="1"
-            android:layout_rowWeight="1"
-            android:layout_margin="8dp"
-            app:cardCornerRadius="16dp"
-            android:backgroundTint="#4DB6AC">
+        <GridLayout
+            android:id="@+id/gridDashboard"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingBottom="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:columnCount="2"
+            android:rowCount="3"
+            android:orientation="horizontal"
+            android:alignmentMode="alignMargins"
+            android:columnOrderPreserved="false"
+            android:useDefaultMargins="true">
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="Reservation Management"
-                android:textSize="18sp"
-                android:textColor="@android:color/white"
-                android:gravity="center"
-                android:textStyle="bold"/>
-        </androidx.cardview.widget.CardView>
+            <!-- Event Management -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardEventManagement"
+                android:layout_width="0dp"
+                android:layout_height="150dp"
+                android:layout_columnWeight="1"
+                android:layout_rowWeight="1"
+                android:layout_margin="8dp"
+                app:cardCornerRadius="16dp"
+                android:backgroundTint="#FFB74D">
 
-        <!-- Reports -->
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardReports"
-            android:layout_width="0dp"
-            android:layout_height="150dp"
-            android:layout_columnWeight="1"
-            android:layout_rowWeight="1"
-            android:layout_margin="8dp"
-            app:cardCornerRadius="16dp"
-            android:backgroundTint="#4FC3F7">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="Event Management"
+                    android:textSize="18sp"
+                    android:textColor="@android:color/white"
+                    android:gravity="center"
+                    android:textStyle="bold"/>
+            </androidx.cardview.widget.CardView>
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="Reports"
-                android:textSize="18sp"
-                android:textColor="@android:color/white"
-                android:gravity="center"
-                android:textStyle="bold"/>
-        </androidx.cardview.widget.CardView>
+            <!-- Reports -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardReports"
+                android:layout_width="0dp"
+                android:layout_height="150dp"
+                android:layout_columnWeight="1"
+                android:layout_rowWeight="1"
+                android:layout_margin="8dp"
+                app:cardCornerRadius="16dp"
+                android:backgroundTint="#4FC3F7">
 
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="Reports"
+                    android:textSize="18sp"
+                    android:textColor="@android:color/white"
+                    android:gravity="center"
+                    android:textStyle="bold"/>
+            </androidx.cardview.widget.CardView>
 
-
-
-
-    </GridLayout>
-</ScrollView>
+        </GridLayout>
+    </ScrollView>
+</LinearLayout>

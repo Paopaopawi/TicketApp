@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    card_view:cardCornerRadius="12dp"
+    card_view:cardElevation="4dp"
+    android:padding="12dp">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="20dp">
+
+        <TextView
+            android:id="@+id/tvUserTicketName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Ticket Name"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"/>
+
+        <TextView
+            android:id="@+id/tvUserTicketQuantity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Qty: 1"
+            android:textColor="@color/black"/>
+
+        <TextView
+            android:id="@+id/tvUserTicketPrice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Price: ₱0"
+            android:textColor="@color/black"/>
+
+        <TextView
+            android:id="@+id/tvUserTicketSubtotal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Subtotal: ₱0"
+            android:textStyle="bold"
+            android:textColor="@color/black"/>
+
+        <TextView
+            android:id="@+id/tvUserTicketCode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Code: 123456"
+            android:textColor="#FF5722"
+            android:textStyle="bold"
+            android:paddingTop="4dp"/>
+
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

@@ -9,6 +9,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -38,6 +39,9 @@ public class UserDashboardActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private EditText etSearch;
     private Spinner spFilter;
+    private TextView homeButton;
+    private TextView UserButton;
+
 
     private final List<Event> allEvents = new ArrayList<>();
     private final List<Object> displayList = new ArrayList<>();
@@ -54,6 +58,11 @@ public class UserDashboardActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerViewEvents);
         etSearch = findViewById(R.id.etSearch);
         spFilter = findViewById(R.id.spFilter);
+        homeButton = findViewById(R.id.tvHome);
+        UserButton = findViewById(R.id.tvUserTickets);
+
+        homeButton.setOnClickListener(v -> openActivity(AdminDashboardActivity.class));
+        UserButton.setOnClickListener(v -> openActivity(UserTicketsActivity.class));
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -217,5 +226,8 @@ public class UserDashboardActivity extends AppCompatActivity {
                         public void onCancelled(@NonNull DatabaseError error) {}
                     });
         });
+    }
+    private void openActivity(Class<?> activityClass){
+        startActivity(new Intent(UserDashboardActivity.this, activityClass));
     }
 }

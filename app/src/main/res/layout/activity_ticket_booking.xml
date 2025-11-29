@@ -6,7 +6,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp"
+    android:paddingTop="50dp"
+    android:paddingLeft="20dp"
+    android:paddingRight="20dp"
+    android:paddingBottom="20dp"
     tools:context="com.example.ticketapp.activities.TicketBookingActivity"
     >
 
@@ -27,16 +30,6 @@
             android:text="Select Tickets"
             android:textSize="20sp"
             android:textStyle="bold"/>
-
-        <TextView
-            android:id="@+id/tvTimer"
-            android:layout_width="0dp"
-            android:layout_weight="0.5"
-            android:gravity="end"
-            android:layout_height="wrap_content"
-            android:text="05:00"
-            android:textSize="18sp"
-            android:textColor="@color/black"/>
     </LinearLayout>
 
 
